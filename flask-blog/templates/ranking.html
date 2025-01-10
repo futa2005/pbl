@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% block title %}ランキング{% endblock %}
+{% block content %}
+    <!-- フォントとAOSの読み込み -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
+    </script>
+
+    <!-- CSRFトークンをメタタグとして埋め込む -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- スタイル定義 -->
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3, .display-4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+            color: #0cac32;
+        }
+
+        .ranking-section {
+            padding-top: 15rem;
+            padding-bottom: 10rem;
+        }
+
+        .ranking-number {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 60px;
+            height: 60px;
+            background-color: #ffcc00;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .rank-1 {
+            background-color: #ffd700; 
+        }
+        .rank-2 {
+            background-color: #c0c0c0;
+        }
+        .rank-3 {
+            background-color: #cd7f32;
+        }
+
+        .card {
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .icon-count {
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        .icon-count i {
+            margin-right: 5px;
+        }
+
+        .btn-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            transition: background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn-primary-custom {
+            background-color: #007bff;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .btn-outline-primary-custom {
+            background-color: transparent;
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+
+        .btn-outline-primary-custom:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .like-button {
+            background: none;
+            border: none;
+            color: #ff4757;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .like-button i {
+            margin-right: 0.25rem;
+        }
+
+        .like-button:focus {
+            outline: none;
+        }
+
+        .ranking-card {
+            overflow: visible;
+        }
+
+        .ranking-section .section-title {
+            font-size: 2.5rem;
+        }
+
+        .ranking-section .btn-custom {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .ranking-section {
+                padding-top: 10rem;
+                padding-bottom: 6rem;
+            }
+            .ranking-number {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                top: -15px;
+                left: -15px;
+            }
+            .image-container {
+                height: 150px;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='img/Mixpress_logo.webp') }}" alt="Mixpress Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'explanation' %} active{% endif %}" 
+                           href="{{ url_for('explanation') }}">Mixpress</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('ranking') }}">Ranking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}">Be an artist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('explanationvideo') }}">About us</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">Logout ({{ current_user.username }})</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('signup') }}">Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ランキングセクション -->
+    <section class="ranking-section" id="ranking">
+        <div class="container">
+            <!-- タイトルとボタン -->
+            <div class="position-relative mb-4" data-aos="fade-up">
+                <h1 class="section-title mb-0 text-center">Ranking</h1>
+                <a href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}" 
+                   class="btn btn-custom btn-primary-custom create-button">
+                    <i class="fas fa-plus-circle"></i> 今すぐ作成
+                </a>
+            </div>
+            <div class="row">
+                {% for post in posts %}
+                    <div class="col-12 col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                        <div class="card ranking-card position-relative">
+                            <div class="ranking-number rank-{{ loop.index }}">
+                                <span>{{ loop.index }}</span>
+                            </div>
+                            <div class="image-container">
+                                {% if post.img_name %}
+                                    <img src="{{ url_for('static', filename='img/' + post.img_name) }}" alt="{{ post.title }}">
+                                {% endif %}
+                            </div>
+                            <div class="icon-counts d-flex justify-content-center my-2">
+                                <div class="icon-count me-3">
+                                    <i class="fas fa-star"></i> {{ post.icon1_count or 0 }}
+                                </div>
+                                <div class="icon-count me-3">
+                                    <i class="fas fa-heart"></i> {{ post.icon2_count or 0 }}
+                                </div>
+                                <div class="icon-count">
+                                    <i class="fas fa-leaf"></i> {{ post.icon3_count or 0 }}
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.body[:100] }}...</p>
+                                <p class="text-muted small">投稿日: {{ post.created_at.strftime('%Y-%m-%d') }}</p>
+                                <!-- 投稿者名を表示 12.20-->
+                                <p class="text-muted small">投稿者: {{ post.username }}</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <a href="{{ url_for('readmore', post_id=post.id) }}" class="btn btn-outline-primary-custom btn-sm">
+                                        <i class="fas fa-book-open"></i> 詳しく読む
+                                    </a>
+                                    <button class="like-button" data-post-id="{{ post.id }}">
+                                        <i class="fas fa-heart"></i> <span class="like-count">{{ post.likes }}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // 各投稿ごとの「いいね」回数を記録するオブジェクト
+        const likeCountPerPost = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const likeButtons = document.querySelectorAll('.like-button');
+
+            likeButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const postId = this.dataset.postId;
+                    const likeCountSpan = this.querySelector('.like-count');
+
+                    // postIdごとのカウントを初期化
+                    if (!likeCountPerPost[postId]) {
+                        likeCountPerPost[postId] = 0;
+                    }
+
+                    // 10回以上はいいね不可
+                    if (likeCountPerPost[postId] >= 10) {
+                        alert('この投稿には10回までいいねできます。');
+                        return;
+                    }
+
+                    fetch('/like/' + postId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.likes !== undefined) {
+                            likeCountSpan.textContent = data.likes;
+                            likeCountPerPost[postId]++;
+                        } else {
+                            alert('いいねの更新に失敗しました。');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('いいねの更新に失敗しました。');
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

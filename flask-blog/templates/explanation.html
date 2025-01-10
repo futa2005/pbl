@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- AOS Initialization -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true, // アニメーションが一度だけ発生するように設定
+        });
+    </script>
+
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3, .display-4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        } 
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+            color: #0cac32;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Section Padding Adjustment */
+        section {
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+        }
+
+        /* Custom Button Styles */
+        .btn-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            transition: background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn-primary-custom {
+            background-color: #007bff;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .btn-outline-primary-custom {
+            background-color: transparent;
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+
+        .btn-outline-primary-custom:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-custom i {
+            margin-right: 0.5rem;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #fff;
+            padding: 2rem 0;
+        }
+
+        footer p {
+            margin: 0;
+            color: #777;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .inspiration-section .display-4 {
+                font-size: 2rem;
+            }
+            .inspiration-section .lead {
+                font-size: 1rem;
+            }
+            .cards-section {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+            .cards-section .card-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='img/Mixpress_logo.webp') }}" alt="Mixpress Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'explanation' %} active{% endif %}" 
+                           href="{{ url_for('explanation') }}">Mixpress</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('ranking') }}">Ranking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}">Be an artist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('explanationvideo') }}">About us</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">Logout ({{ current_user.username }})</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('signup') }}">Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Inspiration Section -->
+    <section class="inspiration-section" data-aos="fade-up">
+        <div class="container text-center">
+            <h1 class="display-4 font-weight-bold mb-4">Engineering the Future, but Can't Engineer a Chill Space?</h1>
+            <p class="lead"> 
+                私たちのMixpressは、単なる飲み物以上の体験を提供するために、「mix」と「express」を組み合わせて誕生しました。Mixpressが象徴するのは、ミックスジュースという一杯の飲み物に込められた多彩な要素が織りなす可能性や洗練されたスタイルです。フルーツや素材が絶妙に混ざり合い、それぞれが調和しながらも独自の風味を放つように、私たちのMixpressも一人ひとりの個性やニーズに応じて、自由でクリエイティブなひとときをお届けします。飲みながら自分らしく、リラックスし、未来へ向かうエネルギーをチャージする、そのような特別な空間を提供します。
+            </p>
+        </div>
+    </section>
+
+    <!-- Cards Section -->
+    <section class="cards-section bg-light">
+        <div class="container">
+            <div class="row">
+                <!-- Card 1 -->
+                <div class="col-md-4 mb-4" data-aos="zoom-in">
+                    <div class="card h-100">
+                        <img src="{{ url_for('static', filename='img/card1.webp') }}" class="card-img-top" alt="MixPressの使い方">
+                        <div class="card-body">
+                            <h5 class="card-title">MixPressの使い方</h5>
+                            <p class="card-text">MixPressの活用方法をご紹介します。</p>
+                            <a href="{{ url_for('explanationvideo') }}"  class="btn btn-custom btn-primary-custom"><i class="fas fa-info-circle"></i>Mixpressを知る</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="card h-100">
+                        <img src="{{ url_for('static', filename='img/card2.webp') }}" class="card-img-top" alt="レシピランキング">
+                        <div class="card-body">
+                            <h5 class="card-title">レシピランキング</h5>
+                            <p class="card-text">人気のレシピをランキング形式でご紹介。</p>
+                            <a href="{{ url_for('ranking') }}" class="btn btn-custom btn-primary-custom"><i class="fas fa-trophy"></i>詳しく見る</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="card h-100">
+                        <img src="{{ url_for('static', filename='img/card3.webp') }}" class="card-img-top" alt="レシピを作る">
+                        <div class="card-body">
+                            <h5 class="card-title">レシピを作る</h5>
+                            <p class="card-text">あなたオリジナルのレシピを作成しましょう。</p>
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-custom btn-primary-custom"><i class="fas fa-pencil-alt"></i>レシピ作成</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <p>© 2024 Mixpress. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %} 

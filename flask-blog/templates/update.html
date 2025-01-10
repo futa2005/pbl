@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block title %}投稿の編集{% endblock %}
+{% block content %}
+    <!-- Font Awesome の読み込み（アイコン用） -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- スタイルシート -->
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3, .display-4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+            color: #0cac32;
+        }
+
+        /* Form Styles */
+        .form-container {
+            margin-top: 6rem;
+            margin-bottom: 6rem;
+        }
+
+        /* Card Hover Effect */
+        .card {
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-sm {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+        }
+
+        #submit-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .form-container {
+                margin-top: 4rem;
+                margin-bottom: 4rem;
+            }
+
+            .card h5 {
+                font-size: 1rem;
+            }
+
+            .card i {
+                font-size: 2rem;
+            }
+
+            #total-count {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+
+    <div class="container form-container">
+        <div class="row">
+            <!-- レスポンシブなカラム設定 -->
+            <div class="col-12 col-md-10 col-lg-8 mx-auto">
+                <h2 class="mb-4 text-center">ポストを編集</h2>
+                <form method="POST" enctype="multipart/form-data" class="form-group" id="editPostForm">
+                    {{ form.hidden_tag() }}
+
+                    <!-- タイトルフィールド -->
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="名前をシェア") }}
+                        {% for error in form.title.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- アイコン選択セクション -->
+                    <div class="mb-4">
+                        <label class="form-label"><strong>どのドリンクをチョイスしましたか(合計6回選択してください)</strong></label>
+                        <div class="row">
+                            <!-- アイコン1 -->
+                            <div class="col-12 col-md-4 text-center mb-3">
+                                <div class="card p-3 h-100">
+                                    <i class="fas fa-star fa-3x mb-2"></i>
+                                    <h5>ドリンク1</h5>
+                                    <div class="d-flex justify-content-center align-items-center mt-2">
+                                        <button type="button" class="btn btn-secondary btn-sm me-2 decrement-btn" data-icon="icon1" aria-label="アイコン1を減らす">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span id="icon1-count" class="mx-2">{{ post.icon1_count }}</span>
+                                        <button type="button" class="btn btn-secondary btn-sm ms-2 increment-btn" data-icon="icon1" aria-label="アイコン1を増やす">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- アイコン2 -->
+                            <div class="col-12 col-md-4 text-center mb-3">
+                                <div class="card p-3 h-100">
+                                    <i class="fas fa-heart fa-3x mb-2"></i>
+                                    <h5>ドリンク2</h5>
+                                    <div class="d-flex justify-content-center align-items-center mt-2">
+                                        <button type="button" class="btn btn-secondary btn-sm me-2 decrement-btn" data-icon="icon2" aria-label="アイコン2を減らす">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span id="icon2-count" class="mx-2">{{ post.icon2_count }}</span>
+                                        <button type="button" class="btn btn-secondary btn-sm ms-2 increment-btn" data-icon="icon2" aria-label="アイコン2を増やす">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- アイコン3 -->
+                            <div class="col-12 col-md-4 text-center mb-3">
+                                <div class="card p-3 h-100">
+                                    <i class="fas fa-leaf fa-3x mb-2"></i>
+                                    <h5>ドリンク3</h5>
+                                    <div class="d-flex justify-content-center align-items-center mt-2">
+                                        <button type="button" class="btn btn-secondary btn-sm me-2 decrement-btn" data-icon="icon3" aria-label="アイコン3を減らす">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span id="icon3-count" class="mx-2">{{ post.icon3_count }}</span>
+                                        <button type="button" class="btn btn-secondary btn-sm ms-2 increment-btn" data-icon="icon3" aria-label="アイコン3を増やす">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 合計カウント表示 -->
+                        <div class="mt-3 text-center">
+                            <strong>合計: <span id="total-count">0</span>/6</strong>
+                        </div>
+                        <!-- エラーメッセージ -->
+                        <div id="selection-error" class="text-danger text-center mt-2" style="display: none;">
+                            アイコンの選択は合計6回必要です。
+                        </div>
+
+                        <!-- アイコンカウント用の隠しフィールド -->
+                        {{ form.icon1_count(id="hidden-icon1") }}
+                        {{ form.icon2_count(id="hidden-icon2") }}
+                        {{ form.icon3_count(id="hidden-icon3") }}
+                    </div>
+
+                    <!-- 記事フィールド -->
+                    <div class="mb-3">
+                        {{ form.body.label(class="form-label") }}
+                        {{ form.body(class="form-control", rows="8", placeholder="感想をシェア") }}
+                        {% for error in form.body.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- 画像フィールド -->
+                    <div class="mb-3">
+                        {{ form.img.label(class="form-label") }}
+                        {{ form.img(class="form-control") }}
+                        {% if post.img_name %}
+                            <p>現在の画像: {{ post.img_name }}</p>
+                        {% endif %}
+                        {% for error in form.img.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- 送信ボタン -->
+                    <div class="text-center">
+                        {{ form.submit(class="btn btn-primary btn-lg", id="submit-button", disabled=True) }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- アイコン選択ロジックのJavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const maxTotal = 6;
+            let totalCount = 0;
+
+            const iconCounters = {
+                icon1: parseInt('{{ post.icon1_count }}') || 0,
+                icon2: parseInt('{{ post.icon2_count }}') || 0,
+                icon3: parseInt('{{ post.icon3_count }}') || 0
+            };
+
+            const incrementButtons = document.querySelectorAll('.increment-btn');
+            const decrementButtons = document.querySelectorAll('.decrement-btn');
+            const totalCountSpan = document.getElementById('total-count');
+            const selectionError = document.getElementById('selection-error');
+            const submitButton = document.getElementById('submit-button');
+
+            function updateUI() {
+                // 合計カウントの更新
+                totalCount = iconCounters.icon1 + iconCounters.icon2 + iconCounters.icon3;
+                totalCountSpan.textContent = totalCount;
+
+                // カウントの表示を更新
+                document.getElementById('icon1-count').textContent = iconCounters.icon1;
+                document.getElementById('icon2-count').textContent = iconCounters.icon2;
+                document.getElementById('icon3-count').textContent = iconCounters.icon3;
+
+                // 隠しフィールドの更新
+                document.getElementById('hidden-icon1').value = iconCounters.icon1;
+                document.getElementById('hidden-icon2').value = iconCounters.icon2;
+                document.getElementById('hidden-icon3').value = iconCounters.icon3;
+
+                // エラーメッセージの表示/非表示
+                if (totalCount === maxTotal) {
+                    selectionError.style.display = 'none';
+                    submitButton.disabled = false;
+                } else {
+                    selectionError.style.display = 'block';
+                    submitButton.disabled = true;
+                }
+            }
+
+            // インクリメントボタンのイベントリスナー
+            incrementButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const icon = this.getAttribute('data-icon');
+                    if (totalCount < maxTotal) {
+                        iconCounters[icon]++;
+                        updateUI();
+                    }
+                });
+            });
+
+            // デクリメントボタンのイベントリスナー
+            decrementButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const icon = this.getAttribute('data-icon');
+                    if (iconCounters[icon] > 0) {
+                        iconCounters[icon]--;
+                        updateUI();
+                    }
+                });
+            });
+
+            // 初期UIの更新
+            updateUI();
+        });
+    </script>
+{% endblock %}

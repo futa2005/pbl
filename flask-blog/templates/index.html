@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- AOS Initialization -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true, // アニメーションが一度だけ発生するように設定
+        });
+    </script>
+
+    <!-- CSRFトークンをメタタグとして埋め込む -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <style>
+        /* ここはもともとのCSS部分、省略せずに掲載していますが変更点は無し */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3, .display-4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        } 
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+            color: #0cac32;
+        }
+        .hero-section {
+            position: relative;
+            height: 80vh;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding-bottom: 6rem;
+            margin-bottom: 6rem;
+        }
+        .hero-section .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .hero-section .content {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+        .hero-section .content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+        .hero-section .content p {
+            font-size: 1.25rem;
+        }
+        .carousel-item {
+            height: 80vh;
+        }
+        .carousel-item img {
+            object-fit: cover;
+            height: 100%;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        section {
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+        }
+        .btn-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            transition: background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            color: #fff;
+        }
+        .btn-primary-custom {
+            background-color: #007bff;
+        }
+        .btn-primary-custom:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        .btn-outline-primary-custom {
+            background-color: transparent;
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+        .btn-outline-primary-custom:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .like-button {
+            background: none;
+            border: none;
+            color: #ff4757;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        .like-button i {
+            margin-right: 0.25rem;
+        }
+        .btn-custom i {
+            margin-right: 0.5rem;
+        }
+        .like-button:focus {
+            outline: none;
+        }
+        .ranking-number {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 60px;
+            height: 60px;
+            background-color: #ffcc00;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+        .ranking-section .section-title {
+            font-size: 2.5rem;
+        }
+        .ranking-section .btn-custom {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        .ranking-card {
+            overflow: visible;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .rank-1 {
+            background-color: #ffd700;
+        }
+        .rank-2 {
+            background-color: #c0c0c0;
+        }
+        .rank-3 {
+            background-color: #cd7f32;
+        }
+        .create-button {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        footer {
+            background-color: #fff;
+            padding: 2rem 0;
+        }
+        footer p {
+            margin: 0;
+            color: #777;
+        }
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 60vh;
+            }
+            .hero-section .content h1 {
+                font-size: 2rem;
+            }
+            .hero-section .content p {
+                font-size: 1rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            section {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+            .image-container {
+                height: 150px;
+            }
+            .cards-section {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+            .artistic-section {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+        }
+    </style>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='img/Mixpress_logo.webp') }}" alt="Mixpress Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'explanation' %} active{% endif %}" 
+                           href="{{ url_for('explanation') }}">Mixpress</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('ranking') }}">Ranking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}">Be an artist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('explanationvideo') }}">About us</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">Logout ({{ current_user.username }})</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('signup') }}">Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <div id="heroCarousel" class="carousel slide hero-section" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% set slide_images = ['slide1.webp', 'slide2.webp', 'slide3.webp'] %}
+            {% for i in range(1, 4) %}
+                <div class="carousel-item{% if i == 1 %} active{% endif %}" 
+                     style="background-image: url('{{ url_for('static', filename='img/' + slide_images[i-1]) }}');">
+                    <div class="overlay"></div>
+                    <div class="container h-100">
+                        <div class="row h-100 align-items-center justify-content-center">
+                            <div class="col text-center text-white" data-aos="fade-up">
+                                {% if i == 1 %}
+                                    <h1>Mixpress</h1>
+                                    <p>ひと口で広がる無限の表現...</p>
+                                    <a href="{{ url_for('explanation') }}" class="btn btn-custom btn-primary-custom mt-3" ><i class="fas fa-info-circle"></i>詳しくはこちら</a>
+                                {% elif i == 2 %}
+                                    <h1>クリエイティブな表現</h1>
+                                    <p>あなたのアイデアを形にするプラットフォーム...</p>
+                                    <a href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}" 
+                                       class="btn btn-custom btn-primary-custom mt-3"><i class="fas fa-plus-circle"></i>今すぐ作成</a>
+                                {% elif i == 3 %}
+                                    <h1>コミュニティ</h1>
+                                    <p>アーティストたちが集う場所...</p>
+                                    <a href="{{ url_for('signup') }}" class="btn btn-custom btn-primary-custom mt-3"><i class="fas fa-user-plus"></i>参加する</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">前へ</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">次へ</span>
+        </button>
+    </div>
+
+    <!-- ランキングセクション -->
+    <section class="ranking-section" id="ranking">
+        <div class="container">
+            <!-- タイトルとボタンを調整 -->
+            <div class="position-relative mb-4" data-aos="fade-up">
+                <h1 class="section-title mb-0 text-center">Ranking</h1>
+                <a href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}" 
+                   class="btn btn-custom btn-primary-custom create-button">
+                    <i class="fas fa-plus-circle"></i> 今すぐ作成
+                </a>
+            </div>
+            <div class="row">
+                {% for post in top_posts %}
+                    <!-- レスポンシブなカラム設定 -->
+                    <div class="col-12 col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                        <div class="card ranking-card position-relative">
+                            <!-- ランキング番号 -->
+                            <div class="ranking-number rank-{{ loop.index }}">
+                                <span>{{ loop.index }}</span>
+                            </div>
+                            <!-- 画像 -->
+                            <div class="image-container">
+                                <img src="{{ url_for('static', filename='img/' + post.img_name) }}" alt="{{ post.title }}">
+                            </div>
+                            <!-- アイコンカウント -->
+                            <div class="icon-counts d-flex justify-content-center my-2">
+                                <div class="icon-count me-3">
+                                    <i class="fas fa-star"></i> {{ post.icon1_count or 0 }}
+                                </div>
+                                <div class="icon-count me-3">
+                                    <i class="fas fa-heart"></i> {{ post.icon2_count or 0 }}
+                                </div>
+                                <div class="icon-count">
+                                    <i class="fas fa-leaf"></i> {{ post.icon3_count or 0 }}
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.body[:100] }}...</p>
+                                <p class="text-muted small">投稿日: {{ post.created_at.strftime('%Y-%m-%d') }}</p>
+                                <!-- 投稿者名を表示 12.20-->
+                                <p class="text-muted small">投稿者: {{ post.username }}</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <a href="/{{ post.id }}/readmore" class="btn btn-outline-primary-custom btn-sm">
+                                        <i class="fas fa-book-open"></i> 詳しく読む
+                                    </a>
+                                    <!-- Like Button -->
+                                    <button class="like-button" data-post-id="{{ post.id }}">
+                                        <i class="fas fa-heart"></i> <span class="like-count">{{ post.likes }}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- 以下は元のまま -->
+    <section class="inspiration-section" data-aos="fade-up">
+        <div class="container text-center">
+            <h1 class="display-4 font-weight-bold mb-4">The brightest minds need a break, too</h1>
+            <p class="lead">
+                「最高の頭脳にも休息が必要です。少し手を止めて、リフレッシュし、創造力を解き放ちましょう。コーヒーブレイクでも、静かなひとときでも、自分のための時間を取ることが、次の大きなアイデアを生み出す鍵です。今、一息ついて、後で革新を。」
+            </p>
+        </div>
+    </section>
+
+    <section class="user-choice-section bg-light" data-aos="fade-up">
+        <div class="container">
+            <h1 class="section-title">User Choice</h1>
+        </div>
+    </section>
+
+    <section class="artistic-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6" data-aos="fade-right">
+                    <img src="{{ url_for('static', filename='img/artist.webp') }}" alt="Main Picture" class="img-fluid rounded">
+                </div>
+                <div class="col-md-6" data-aos="fade-left">
+                    <h1 class="mb-4">全ての人はアーティスト</h1>
+                    <p class="lead">
+                        個性を大切にし、日常の中に小さなアートを見つける。それが「ミクスプレス」の哲学です。ひとりひとりが持つ感性と情熱を、フレッシュなフルーツとともに形に。さあ、今日のあなたはどんなアートを描きますか?
+                    </p>
+                    <a href="{{ url_for('explanation') }}" class="btn btn-custom btn-primary-custom mt-3"><i class="fas fa-info-circle"></i>詳しくはこちら</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cards-section bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4" data-aos="zoom-in">
+                    <div class="card h-100">
+                        <img src="{{ url_for('static', filename='img/card1.webp') }}" class="card-img-top" alt="MixPressの使い方">
+                        <div class="card-body">
+                            <h5 class="card-title">MixPressの使い方</h5>
+                            <p class="card-text">MixPressの活用方法をご紹介します。</p>
+                            <a href="{{ url_for('explanationvideo') }}"  class="btn btn-custom btn-primary-custom"><i class="fas fa-info-circle"></i>Mixpressを知る</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="card h-100">
+                        <img src="{{ url_for('static', filename='img/card2.webp') }}" class="card-img-top" alt="レシピランキング">
+                        <div class="card-body">
+                            <h5 class="card-title">レシピランキング</h5>
+                            <p class="card-text">人気のレシピをランキング形式でご紹介。</p>
+                            <a href="{{ url_for('ranking') }}" class="btn btn-custom btn-primary-custom"><i class="fas fa-trophy"></i>詳しく見る</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="card h-100">
+                        <img src="{{ url_for('static', filename='img/card3.webp') }}" class="card-img-top" alt="レシピを作る">
+                        <div class="card-body">
+                            <h5 class="card-title">レシピを作る</h5>
+                            <p class="card-text">あなたオリジナルのレシピを作成しましょう。</p>
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-custom btn-primary-custom"><i class="fas fa-pencil-alt"></i>レシピ作成</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="aboutus-section" id="aboutus">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 order-md-2" data-aos="fade-left">
+                    <h1 class="mb-4">About Us</h1>
+                    <p class="lead">
+                        MixPressは、アーティストやクリエイティブな人々が集まって自由に楽しむ、特別なカスタムドリンクバーです。ここでは、誰もが「ドリンクアーティスト」として、様々な素材や味を組み合わせて自分だけのオリジナルドリンクを作り、共有することができます。
+                    </p>
+                    <a href="{{ url_for('explanation') }}" class="btn btn-custom btn-primary-custom mt-3"><i class="fas fa-info-circle"></i>詳しくはこちら</a>
+                </div>
+                <div class="col-md-6 order-md-1" data-aos="fade-right">
+                    <img src="{{ url_for('static', filename='img/aboutus.webp') }}" alt="About Us" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center">
+        <div class="container">
+            <p>© 2024 Mixpress. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- CSRF Token -->
+    <script type="text/javascript">
+        const csrfToken = "{{ csrf_token() }}";
+    </script>
+    <!-- Like Button Script -->
+    <script>
+        // 各投稿ごとの「いいね」回数を記録するオブジェクト
+        const likeCountPerPost = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeButtons = document.querySelectorAll('.like-button');
+            likeButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const postId = this.getAttribute('data-post-id');
+
+                    // postIdごとのカウントを初期化
+                    if (!likeCountPerPost[postId]) {
+                        likeCountPerPost[postId] = 0;
+                    }
+
+                    // 10回以上はいいね不可
+                    if (likeCountPerPost[postId] >= 10) {
+                        alert('この投稿には10回までいいねできます。');
+                        return;
+                    }
+
+                    fetch(`/like/${postId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.likes !== undefined) {
+                            this.querySelector('.like-count').innerText = data.likes;
+                            // いいねした回数を増やす
+                            likeCountPerPost[postId]++;
+                        } else {
+                            alert('いいねの更新に失敗しました。');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('いいねの更新に失敗しました。');
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

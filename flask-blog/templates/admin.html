@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block title %}管理ページ{% endblock %}
+{% block content %}
+    <!-- Font Awesome の読み込み（アイコン用） -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- スタイルシート -->
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3, .display-4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+            color: #0cac32;
+        }
+
+        /* Adjust margin between header and content */
+        .content-section {
+            margin-top: 12rem;
+            margin-bottom: 12rem;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        /* Button Styles */
+        .btn-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.2s, color 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-edit:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-delete:hover {
+            background-color: #a71d2a;
+            color: #fff;
+        }
+
+        .btn-create {
+            background-color: #28a745;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 50px;
+        }
+
+        .btn-create:hover {
+            background-color: #218838;
+            color: #fff;
+        }
+
+        /* Icon Styles */
+        .btn-custom i {
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .content-section {
+                margin-top: 6rem;
+                margin-bottom: 6rem;
+            }
+
+            .card img {
+                height: 150px;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .btn-create {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .btn-custom {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+    </style>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='img/Mixpress_logo.webp') }}" alt="Mixpress Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'explanation' %} active{% endif %}" 
+                        href="{{ url_for('explanation') }}">Mixpress</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('ranking') }}">Ranking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% if current_user.is_authenticated %}{{ url_for('admin') }}{% else %}{{ url_for('login') }}{% endif %}">Be an artist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('explanationvideo') }}">About us</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">Logout ({{ current_user.username }})</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('signup') }}">Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- コンテンツセクション -->
+    <section class="container content-section">
+        <div class="text-center mb-5">
+            <h2 class="mb-3">Post Your Choice</h2>
+            <p>みんなにレシピを届けよう</p>
+            <a href="{{ url_for('create') }}" class="btn btn-create">
+                <i class="fas fa-plus-circle"></i> 新規作成
+            </a>
+        </div>
+        <div class="row">
+            {% for post in posts %}
+                <!-- レスポンシブなカラム設定 -->
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        {% if post.img_name %}
+                            <img src="{{ url_for('static', filename='img/' + post.img_name) }}" class="card-img-top" alt="{{ post.title }}">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.body[:100] }}...</p>
+                            <p class="text-muted small">投稿日: {{ post.created_at.strftime('%Y-%m-%d') }}</p>
+                            <div class="mt-auto d-flex justify-content-between">
+                                <!-- 編集ボタン -->
+                                <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-custom btn-edit">
+                                    <i class="fas fa-edit"></i> 編集
+                                </a>
+                                <!-- 削除ボタン（フォームを使用） -->
+                                <form action="{{ url_for('delete', post_id=post.id) }}" method="POST">
+                                    {{ delete_forms[post.id].hidden_tag() }}
+                                    <button type="submit" class="btn btn-custom btn-delete" onclick="return confirm('本当に削除しますか？');">
+                                        <i class="fas fa-trash-alt"></i> 削除
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Font Awesomeの読み込み（アイコン用） -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}
